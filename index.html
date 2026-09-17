@@ -11,7 +11,7 @@
     <nav class="nav">
       <div class="nav__wrapper">
         <figure class="nav__img--mask">
-          <img class="nav__img" src="" alt="logo" />
+          <img class="nav__img" src="./assets/logo.png" alt="Summarist" />
         </figure>
         <ul class="nav__list--wrapper">
           <li class="nav__list nav__list--login">Login</li>
@@ -37,10 +37,10 @@
                 <br class="remove--tablet" />
                 and even people who don’t like to read.
               </div>
-              <button class="btn home__cta--btn">Login</button>
+              <button class="btn home__cta--btn js-login">Login</button>
             </div>
             <figure class="landing__image--mask">
-              <img src="" alt="landing" />
+              <img src="./assets/landing.png" alt="Illustration of a person reading" />
             </figure>
           </div>
         </div>
@@ -53,7 +53,12 @@
           <div class="features__wrapper">
             <div class="features">
               <div class="features__icon">
-                <AiFillFileText />
+                <span class="icon icon--document" aria-hidden="true">
+                  <svg viewBox="0 0 48 58" role="presentation">
+                    <path d="M8 3h22l10 10v42H8V3Zm22 0v11h10" />
+                    <path d="M15 29h18M15 39h18" />
+                  </svg>
+                </span>
               </div>
               <div class="features__title">Read or listen</div>
               <div class="features__sub--title">
@@ -62,7 +67,12 @@
             </div>
             <div class="features">
               <div class="features__icon">
-                <AiFillBulb />
+                <span class="icon icon--bulb" aria-hidden="true">
+                  <svg viewBox="0 0 48 58" role="presentation">
+                    <path d="M24 4a17 17 0 0 0-9 31v7h18v-7A17 17 0 0 0 24 4Z" />
+                    <path d="M19 47h10" />
+                  </svg>
+                </span>
               </div>
               <div class="features__title">Find your next read</div>
               <div class="features__sub--title">
@@ -71,7 +81,12 @@
             </div>
             <div class="features">
               <div class="features__icon">
-                <AiFillAudio />
+                <span class="icon icon--audio" aria-hidden="true">
+                  <svg viewBox="0 0 48 58" role="presentation">
+                    <rect x="17" y="3" width="14" height="29" rx="7" />
+                    <path d="M10 25v2a14 14 0 0 0 28 0v-2M24 41V31M16 47h16" />
+                  </svg>
+                </span>
               </div>
               <div class="features__title">Briefcasts</div>
               <div class="features__sub--title">
@@ -121,8 +136,8 @@
               <div class="statistics__data">
                 <div class="statistics__data--number">91%</div>
                 <div class="statistics__data--title">
-                  of Summarist members <b>report feeling more productive</b>{"
-                  "} after incorporating the service into their daily routine.
+                  of Summarist members <b>report feeling more productive</b>
+                  after incorporating the service into their daily routine.
                 </div>
               </div>
               <div class="statistics__data">
@@ -163,7 +178,7 @@
               <div class="review__header">
                 <div class="review__name">Hanna M.</div>
                 <div class="review__stars">
-                  <BsStarFill />
+                  <span aria-hidden="true">★★★★★</span>
                 </div>
               </div>
               <div class="review__body">
@@ -176,7 +191,7 @@
               <div class="review__header">
                 <div class="review__name">David B.</div>
                 <div class="review__stars">
-                  <BsStarFill />
+                  <span aria-hidden="true">★★★★★</span>
                 </div>
               </div>
               <div class="review__body">
@@ -189,7 +204,7 @@
               <div class="review__header">
                 <div class="review__name">Nathan S.</div>
                 <div class="review__stars">
-                  <BsStarFill />
+                  <span aria-hidden="true">★★★★★</span>
                 </div>
               </div>
               <div class="review__body">
@@ -203,7 +218,7 @@
               <div class="review__header">
                 <div class="review__name">Ryan R.</div>
                 <div class="review__stars">
-                  <BsStarFill />
+                  <span aria-hidden="true">★★★★★</span>
                 </div>
               </div>
               <div class="review__body">
@@ -215,7 +230,7 @@
             </div>
           </div>
           <div class="reviews__btn--wrapper">
-            <button class="btn home__cta--btn">Login</button>
+          <button class="btn home__cta--btn js-login">Login</button>
           </div>
         </div>
       </div>
@@ -227,15 +242,18 @@
           <div class="numbers__wrapper">
             <div class="numbers">
               <div class="numbers__icon">
-                <BiCrown />
+                <span class="icon icon--crown" aria-hidden="true">
+                  <svg viewBox="0 0 48 48" role="presentation">
+                    <path d="M9 17 17 25 24 13 31 25 39 17v20H9V17Zm0 20h30" />
+                  </svg>
+                </span>
               </div>
               <div class="numbers__title">3 Million</div>
               <div class="numbers__sub--title">Downloads on all platforms</div>
             </div>
             <div class="numbers">
               <div class="numbers__icon numbers__star--icon">
-                <BsStarFill />
-                <BsStarHalf />
+                <span class="icon icon--stars" aria-hidden="true">★★★★<i>★</i></span>
               </div>
               <div class="numbers__title">4.5 Stars</div>
               <div class="numbers__sub--title">
@@ -244,7 +262,7 @@
             </div>
             <div class="numbers">
               <div class="numbers__icon">
-                <RiLeafLine />
+                <span class="icon icon--leaf" aria-hidden="true"></span>
               </div>
               <div class="numbers__title">97%</div>
               <div class="numbers__sub--title">
@@ -336,5 +354,26 @@
         </div>
       </div>
     </section>
+    <div class="login-modal" id="login-modal" aria-hidden="true">
+      <div class="login-modal__backdrop" data-close-login></div>
+      <section class="login-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-login-title">
+        <button class="login-modal__close" type="button" aria-label="Close login" data-close-login>×</button>
+        <h2 id="modal-login-title">Log in to Summarist</h2>
+        <button class="login-option login-option--guest" type="button" id="guest-login">♟ <span>Login as a Guest</span></button>
+        <div class="login-divider"><span></span>or<span></span></div>
+        <form class="modal-login-form" id="modal-login-form">
+          <label for="modal-email">Email</label>
+          <input id="modal-email" name="email" type="email" placeholder="Email" autocomplete="email" required />
+          <label for="modal-password">Password</label>
+          <input id="modal-password" name="password" type="password" placeholder="Password" autocomplete="current-password" required />
+          <button class="btn modal-login-form__submit" type="submit">Login</button>
+          <p class="modal-login-form__message" role="status" aria-live="polite"></p>
+        </form>
+        <button class="modal-link" type="button" id="forgot-password">Forgot your password?</button>
+        <div class="modal-login__footer"><button class="modal-link" type="button" id="create-account">Don't have an account?</button></div>
+      </section>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="./script.js"></script>
   </body>
 </html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Login | Summarist</title>
+  </head>
+  <body class="login-page">
+    <nav class="nav">
+      <div class="nav__wrapper">
+        <a class="nav__img--mask" href="./index.html" aria-label="Summarist home">
+          <img class="nav__img" src="./assets/logo.png" alt="Summarist" />
+        </a>
+        <a class="login-page__back" href="./index.html">Back to home</a>
+      </div>
+    </nav>
+    <main class="login-page__main">
+      <section class="login-card" aria-labelledby="login-title">
+        <div class="login-card__content">
+          <h1 id="login-title">Welcome back</h1>
+          <p class="login-card__subtitle">Log in to continue learning.</p>
+          <form class="login-form">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="Email" required />
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Password" required />
+            <button class="btn login-form__submit" type="submit">Login</button>
+            <p class="login-form__message" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        <figure class="login-card__image">
+          <img src="./assets/login.png" alt="Person using a secure laptop" />
+        </figure>
+      </section>
+    </main>
+    <script src="./login.js"></script>
+  </body>
+</html>
