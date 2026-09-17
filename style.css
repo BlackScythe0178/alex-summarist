@@ -579,7 +579,6 @@ button:disabled {
 .modal-login-form input { height: 40px; border: 2px solid #b6c6d1; border-radius: 4px; background: #eaf2ff; padding: 0 12px; font-size: 14px; color: #032b41; }
 .modal-login-form input:focus { outline: 2px solid #2bd97c; border-color: transparent; }
 .modal-login-form__submit { max-width: none; margin-top: 6px; }
-.modal-login-form__message { min-height: 17px; text-align: center; color: #394547; font-size: 13px; }
 .modal-link { color: #2475ed; font-size: 14px; margin: 8px auto 14px; display: block; }
 .modal-link:hover { text-decoration: underline; }
 .modal-login__footer { margin: 0 -32px; padding: 1px 0; background: #f1f6f4; }

@@ -1,12 +1,19 @@
+// Add your Firebase Web App configuration here.
+const firebaseConfig = {
+  apiKey: 'YOUR_FIREBASE_API_KEY',
+  authDomain: 'YOUR_FIREBASE_AUTH_DOMAIN',
+  projectId: 'YOUR_FIREBASE_PROJECT_ID',
+  storageBucket: 'YOUR_FIREBASE_STORAGE_BUCKET',
+  messagingSenderId: 'YOUR_FIREBASE_MESSAGING_SENDER_ID',
+  appId: 'YOUR_FIREBASE_APP_ID'
+};
+
 const modal = document.querySelector('#login-modal');
 const form = document.querySelector('#modal-login-form');
-const EMAILJS_PUBLIC_KEY = 'Uw7vVYuKaPbSS4-On';
-const EMAILJS_SERVICE_ID = 'service_pmc92ju';
-const EMAILJS_TEMPLATE_ID = 'template_pbru6g6';
+const firebaseReady = !Object.values(firebaseConfig).some((value) => value.startsWith('YOUR_'));
 
-if (window.emailjs && EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
-  window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-}
+if (firebaseReady) firebase.initializeApp(firebaseConfig);
+const auth = firebaseReady ? firebase.auth() : null;
 
 function openLogin() {
   modal.classList.add('is-open');
@@ -21,37 +28,76 @@ function closeLogin() {
   document.body.classList.remove('modal-open');
 }
 
-document.querySelectorAll('.js-login').forEach((button) => button.addEventListener('click', openLogin));
+function setLoggedIn(label) {
+  document.querySelectorAll('.js-login').forEach((button) => {
+    button.textContent = label;
+    button.classList.add('is-authenticated');
+  });
+}
+
+document.querySelectorAll('.js-login').forEach((button) => button.addEventListener('click', () => {
+  if (auth?.currentUser || localStorage.getItem('summaristGuest') === 'true') return;
+  openLogin();
+}));
+
 document.querySelectorAll('[data-close-login]').forEach((button) => button.addEventListener('click', closeLogin));
-document.querySelector('#guest-login').addEventListener('click', () => {
-  closeLogin();
-});
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && modal.classList.contains('is-open')) closeLogin();
 });
 
-form.addEventListener('submit', (event) => {
+document.querySelector('#guest-login').addEventListener('click', () => {
+  localStorage.setItem('summaristGuest', 'true');
+  window.location.href = './for-you.html';
+});
+
+form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const message = document.querySelector('.modal-login-form__message');
-  if (!window.emailjs || EMAILJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') {
-    message.textContent = 'Add your EmailJS IDs to enable this form.';
+  if (!auth) {
+    window.alert('Firebase configuration is still needed.');
     return;
   }
-  window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    user_email: document.querySelector('#modal-email').value,
-    action: 'Summarist login request',
-    submitted_at: new Date().toISOString()
-  }).then(() => {
-    message.textContent = 'Request sent.';
-  }).catch(() => {
-    message.textContent = 'Unable to send the request right now.';
-  });
+  const email = document.querySelector('#modal-email').value.trim();
+  const password = document.querySelector('#modal-password').value;
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+    window.location.href = './for-you.html';
+  } catch (error) {
+    window.alert(error.code === 'auth/invalid-credential'
+      ? 'Incorrect email or password.'
+      : 'Unable to log in. Check your details and try again.');
+  }
 });
 
-document.querySelector('#forgot-password').addEventListener('click', () => {
-  document.querySelector('.modal-login-form__message').textContent = 'Password recovery will be added with authentication.';
+document.querySelector('#forgot-password').addEventListener('click', async () => {
+  const email = document.querySelector('#modal-email').value.trim();
+  if (!auth || !email) {
+    window.alert('Enter your email first.');
+    return;
+  }
+  try {
+    await auth.sendPasswordResetEmail(email);
+    window.alert('Password reset email sent.');
+  } catch {
+    window.alert('Unable to send a reset email.');
+  }
 });
 
-document.querySelector('#create-account').addEventListener('click', () => {
-  document.querySelector('.modal-login-form__message').textContent = 'Account creation will be added with authentication.';
+document.querySelector('#create-account').addEventListener('click', async () => {
+  if (!auth) {
+    window.alert('Firebase configuration is still needed.');
+    return;
+  }
+  const email = document.querySelector('#modal-email').value.trim();
+  const password = document.querySelector('#modal-password').value;
+  try {
+    await auth.createUserWithEmailAndPassword(email, password);
+    window.location.href = './for-you.html';
+  } catch (error) {
+    window.alert(error.code === 'auth/email-already-in-use'
+      ? 'That email already has an account.'
+      : 'Use a valid email and a password with at least six characters.');
+  }
 });
+
+if (auth) auth.onAuthStateChanged((user) => user && setLoggedIn('Logged in'));
+if (localStorage.getItem('summaristGuest') === 'true') setLoggedIn('Guest');

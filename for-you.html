@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For you | Summarist</title>
+<link rel="stylesheet" href="./for-you.css">
+</head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="./for-you.html"><img src="./assets/logo.png" alt="Summarist"></a>
+  <nav>
+    <a class="active" href="#"><span>⌂</span>For you</a>
+    <a href="#"><span>♡</span>My Library</a>
+    <a href="#"><span>✎</span>Highlights</a>
+    <a href="#"><span>⌕</span>Search</a>
+  </nav>
+  <div class="side-bottom">
+    <a href="#"><span>⚙</span>Settings</a>
+    <a href="#"><span>?</span>Help &amp; Support</a>
+    <a id="logout" href="./index.html"><span>⇥</span>Logout</a>
+  </div>
+</aside>
+<main class="content">
+  <header><div class="search"><input id="search" placeholder="Search for books" aria-label="Search for books"><button id="search-button" aria-label="Search">⌕</button></div></header>
+  <div class="page-wrap">
+    <section><h1>Selected just for you</h1><article class="featured"><div class="featured__message">How Constant Innovation<br>Creates Radically Successful<br>Businesses</div><div class="featured__book"><img id="featured-image" src="./assets/pricing-top.png" alt="Featured book"><div><h2 id="featured-title">The Lean Startup</h2><p id="featured-author">Eric Ries</p><button class="play" aria-label="Play briefcast">▶</button><b>3 mins 23 secs</b></div></div></article></section>
+    <section class="book-section"><h1>Recommended For You</h1><p>We think you’ll like these</p><div class="book-grid" id="recommended"><div class="loading">Loading books…</div></div></section>
+    <section class="book-section"><h1>Suggested Books</h1><p>Browse those books</p><div class="book-grid" id="suggested"><div class="loading">Loading books…</div></div></section>
+  </div>
+</main>
+<script src="./for-you.js"></script>
+</body>
+</html>
