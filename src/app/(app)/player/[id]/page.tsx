@@ -1,13 +1,12 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { Book } from "@/types/book";
 import { getBook } from "@/lib/api";
 import { saveToList } from "@/lib/library";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { openAuthModal } from "@/redux/modalSlice";
+import { useAppSelector } from "@/redux/store";
+import LoginPrompt from "@/components/LoginPrompt";
 import AudioPlayer from "@/components/AudioPlayer";
 import Skeleton from "@/components/Skeleton";
 
@@ -25,7 +24,6 @@ function SummarySkeleton() {
 export default function PlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const { user, authReady, plan, subscriptionReady } = useAppSelector((s) => s.user);
   const fontSize = useAppSelector((s) => s.ui.fontSize);
 
@@ -79,13 +77,7 @@ export default function PlayerPage({ params }: { params: Promise<{ id: string }>
     return (
       <div className="row">
         <div className="container">
-          <div className="settings__login--wrapper">
-            <Image src="/login.png" alt="login" width={1033} height={712} />
-            <div className="settings__login--text">Log in to your account to read and listen to the book</div>
-            <button className="btn settings__login--btn" onClick={() => dispatch(openAuthModal("login"))}>
-              Login
-            </button>
-          </div>
+          <LoginPrompt text="Log in to your account to read and listen to the book" />
         </div>
       </div>
     );
