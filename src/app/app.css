@@ -986,9 +986,10 @@
 
   .audio__wrapper {
     flex-direction: column;
+    justify-content: space-evenly;
     height: 180px;
-    padding: 16px 24px;
-    gap: 8px;
+    padding: 12px 24px;
+    gap: 0;
   }
 
   .audio__track--wrapper,
@@ -998,9 +999,6 @@
     justify-content: center;
   }
 
-  .audio__track--wrapper {
-    display: none;
-  }
 
   .summary {
     height: calc(100vh - 80px - 180px);
