@@ -914,6 +914,12 @@
   .selected__book {
     width: 100%;
   }
+
+  .inner-book--img-wrapper .book__image--wrapper {
+    width: 220px;
+    min-width: 220px;
+    height: 220px;
+  }
 }
 
 @media (max-width: 768px) {
