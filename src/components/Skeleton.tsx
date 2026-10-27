@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
 export default function Skeleton({
-  width = "100%",
+  width,
   height = 16,
   radius,
   style,
