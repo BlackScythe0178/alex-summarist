@@ -27,7 +27,7 @@ export default function Landing() {
               </button>
             </div>
             <figure className="landing__image--mask">
-              <Image src="/landing.png" alt="landing" width={779} height={740} priority />
+              <Image src="/landing.png" alt="landing" width={779} height={740} preload />
             </figure>
           </div>
         </div>

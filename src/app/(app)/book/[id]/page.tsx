@@ -99,6 +99,7 @@ export default function BookPage({ params }: { params: Promise<{ id: string }> }
             <div className="inner__book">
               <div className="inner-book__title">
                 {book.title}
+                {book.subscriptionRequired && " (Premium)"}
               </div>
               <div className="inner-book__author">{book.author}</div>
               <div className="inner-book__sub--title">{book.subTitle}</div>
@@ -172,7 +173,7 @@ export default function BookPage({ params }: { params: Promise<{ id: string }> }
             </div>
             <div className="inner-book--img-wrapper">
               <figure className="book__image--wrapper">
-                <Image src={book.imageLink} alt={book.title} width={300} height={300} priority />
+                <Image src={book.imageLink} alt={book.title} width={300} height={300} preload />
               </figure>
             </div>
           </div>

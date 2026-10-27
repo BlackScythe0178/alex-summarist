@@ -14,11 +14,14 @@ import type { Book } from "@/types/book";
 export function useBookAccess() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { user, plan } = useAppSelector((s) => s.user);
+  const { user, plan, subscriptionReady } = useAppSelector((s) => s.user);
 
   return (book: Book) => {
     if (!user) {
       dispatch(openAuthModal("login"));
+    } else if (book.subscriptionRequired && !subscriptionReady) {
+      // Subscription status is still loading; ignore the click rather than mis-route a subscriber
+      return;
     } else if (book.subscriptionRequired && plan === "basic") {
       router.push("/choose-plan");
     } else {

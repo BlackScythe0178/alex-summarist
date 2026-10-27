@@ -78,7 +78,7 @@ export default function Sidebar() {
       <aside className={`sidebar ${open ? "sidebar--opened" : ""}`}>
         <div className="sidebar__logo">
           <Link href="/for-you">
-            <Image src="/logo.png" alt="Summarist logo" width={495} height={114} priority />
+            <Image src="/logo.png" alt="Summarist logo" width={495} height={114} preload />
           </Link>
         </div>
         <div className={`sidebar__wrapper ${isPlayer ? "sidebar__wrapper--player" : ""}`}>

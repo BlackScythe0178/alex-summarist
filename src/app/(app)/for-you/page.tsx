@@ -33,7 +33,7 @@ function SelectedBook({ book }: { book: Book }) {
       <div className="selected__book--line" />
       <div className="selected__book--content">
         <figure className="book__image--wrapper selected__book--image">
-          <Image src={book.imageLink} alt={book.title} width={140} height={140} priority />
+          <Image src={book.imageLink} alt={book.title} width={140} height={140} preload />
         </figure>
         <div className="selected__book--text">
           <div className="selected__book--title">{book.title}</div>

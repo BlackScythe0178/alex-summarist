@@ -121,7 +121,7 @@ export default function ChoosePlanPage() {
           <div className="plan__title">Get unlimited access to many amazing books to read</div>
           <div className="plan__sub--title">Turn ordinary moments into amazing learning opportunities</div>
           <figure className="plan__img--mask">
-            <Image src="/pricing-top.png" alt="pricing" width={860} height={722} priority />
+            <Image src="/pricing-top.png" alt="pricing" width={860} height={722} preload />
           </figure>
         </div>
       </div>

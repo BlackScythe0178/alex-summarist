@@ -108,6 +108,8 @@ export default function AudioPlayer({ book, onEnded }: { book: Book; onEnded?: (
           onChange={(e) => onSeek(Number(e.target.value))}
           onPointerDown={() => setSeeking(true)}
           onPointerUp={() => setSeeking(false)}
+          onPointerCancel={() => setSeeking(false)}
+          onLostPointerCapture={() => setSeeking(false)}
           aria-label="Seek"
         />
         <div className="audio__time">{formatTime(duration)}</div>

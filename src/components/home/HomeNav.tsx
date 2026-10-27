@@ -9,7 +9,7 @@ export default function HomeNav() {
     <nav className="nav">
       <div className="nav__wrapper">
         <figure className="nav__img--mask">
-          <Image className="nav__img" src="/logo.png" alt="logo" width={495} height={114} priority />
+          <Image className="nav__img" src="/logo.png" alt="logo" width={495} height={114} preload />
         </figure>
         <ul className="nav__list--wrapper">
           <li className="nav__list nav__list--login" onClick={handleLogin}>
