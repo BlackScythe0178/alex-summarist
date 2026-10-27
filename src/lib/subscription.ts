@@ -97,7 +97,7 @@ export async function createCheckoutSession(
           new Error(
             savedToServer
               ? "Stripe didn't respond. Check the Run Payments with Stripe extension is installed with the customers collection and a valid Stripe key."
-              : "Couldn't reach the database. Disable any ad blocker for this site and try again."
+              : "Firestore didn't confirm the checkout request. Check Cloud Firestore exists in this project and the rules are published, then see the browser console for the exact error."
           )
         )
       );
