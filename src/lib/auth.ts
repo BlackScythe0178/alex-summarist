@@ -79,8 +79,20 @@ export function authErrorMessage(err: unknown): string {
         return "";
       case "auth/network-request-failed":
         return "Network error. Check your connection";
+      // Setup problems in the Firebase project — name them so they're easy to fix
+      case "auth/operation-not-allowed":
+        return "This sign-in method isn't enabled in Firebase (Authentication > Sign-in method)";
+      case "auth/configuration-not-found":
+        return "Firebase Authentication isn't set up yet (click Get started in Authentication)";
+      case "auth/unauthorized-domain":
+        return "This domain isn't authorized in Firebase (Authentication > Settings > Authorized domains)";
+      case "auth/api-key-not-valid.-please-pass-a-valid-api-key.":
+      case "auth/invalid-api-key":
+        return "Invalid Firebase API key. Check NEXT_PUBLIC_FIREBASE_API_KEY";
+      case "auth/popup-blocked":
+        return "Popup blocked. Allow popups for this site and try again";
       default:
-        return "Something went wrong. Please try again";
+        return `Something went wrong (${err.code}). Please try again`;
     }
   }
   if (err instanceof Error) return err.message;
