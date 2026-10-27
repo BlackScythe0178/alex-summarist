@@ -1,8 +1,9 @@
 import {
-  addDoc,
   collection,
+  doc,
   onSnapshot,
   query,
+  setDoc,
   where,
   type DocumentData,
 } from "firebase/firestore";
@@ -73,28 +74,55 @@ export async function createCheckoutSession(
   };
   if (withTrial) payload.trial_period_days = 7;
 
-  const ref = await addDoc(
-    collection(getDb(), "customers", uid, "checkout_sessions"),
-    payload
-  );
+  const ref = doc(collection(getDb(), "customers", uid, "checkout_sessions"));
 
   return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
+    // Tracks how far we got, so a timeout can say which step stalled
+    let savedToServer = false;
+    let settled = false;
+    let unsub: () => void = () => {};
+
+    const finish = (fn: () => void) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
       unsub();
-      reject(new Error("Checkout is taking too long. Please try again."));
+      fn();
+    };
+
+    // One timer for the whole flow, including saving the request
+    const timeout = setTimeout(() => {
+      finish(() =>
+        reject(
+          new Error(
+            savedToServer
+              ? "Stripe didn't respond. Check the Run Payments with Stripe extension is installed with the customers collection and a valid Stripe key."
+              : "Couldn't reach the database. Disable any ad blocker for this site and try again."
+          )
+        )
+      );
     }, 30000);
-    const unsub = onSnapshot(ref, (snap) => {
-      const data = snap.data();
-      if (!data) return;
-      if (data.error) {
-        clearTimeout(timeout);
-        unsub();
-        reject(new Error(data.error.message ?? "Checkout failed."));
-      } else if (data.url) {
-        clearTimeout(timeout);
-        unsub();
-        resolve(data.url as string);
-      }
-    });
+
+    unsub = onSnapshot(
+      ref,
+      { includeMetadataChanges: true },
+      (snap) => {
+        if (!snap.metadata.hasPendingWrites && snap.exists()) savedToServer = true;
+        const data = snap.data();
+        if (!data) return;
+        if (data.error) {
+          finish(() => reject(new Error(data.error.message ?? "Checkout failed.")));
+        } else if (data.url) {
+          finish(() => resolve(data.url as string));
+        }
+      },
+      (err) => finish(() => reject(new Error(`Checkout failed: ${err.message}`)))
+    );
+
+    setDoc(ref, payload)
+      .then(() => {
+        savedToServer = true;
+      })
+      .catch((err: Error) => finish(() => reject(new Error(`Checkout failed: ${err.message}`))));
   });
 }
