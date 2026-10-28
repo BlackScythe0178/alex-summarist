@@ -1,7 +1,6 @@
 import "server-only";
 import Stripe from "stripe";
-import { initializeApp, getApps } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 import type { Plan } from "@/types/book";
 
 /*
@@ -37,10 +36,16 @@ export interface VerifiedUser {
   email: string;
 }
 
+// Google's public keys for Firebase ID tokens (fetched once, then cached)
+const FIREBASE_JWKS = createRemoteJWKSet(
+  new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com")
+);
+
 /**
- * Verifies the Firebase ID token sent by the browser. Verifying ID tokens only
- * needs the project ID (Google's public keys are fetched automatically), so no
- * service account or paid plan is required.
+ * Verifies the Firebase ID token sent by the browser, following Firebase's
+ * documented checks (RS256 signature from Google's keys, issuer, audience,
+ * expiry, non-empty subject). Needs only the project ID: no service account,
+ * no firebase-admin, no paid plan.
  */
 export async function verifyUser(request: Request): Promise<VerifiedUser> {
   const header = request.headers.get("authorization") ?? "";
@@ -49,16 +54,23 @@ export async function verifyUser(request: Request): Promise<VerifiedUser> {
 
   const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
   if (!projectId) throw new HttpError(500, "NEXT_PUBLIC_FIREBASE_PROJECT_ID is not set.");
-  if (!getApps().length) initializeApp({ projectId });
 
+  let payload;
   try {
-    const decoded = await getAuth().verifyIdToken(token);
-    if (!decoded.email) throw new HttpError(400, "Your account has no email address.");
-    return { uid: decoded.uid, email: decoded.email };
-  } catch (e) {
-    if (e instanceof HttpError) throw e;
+    ({ payload } = await jwtVerify(token, FIREBASE_JWKS, {
+      algorithms: ["RS256"],
+      issuer: `https://securetoken.google.com/${projectId}`,
+      audience: projectId,
+    }));
+  } catch {
     throw new HttpError(401, "Your session has expired. Please log in again.");
   }
+
+  const uid = typeof payload.sub === "string" ? payload.sub : "";
+  const email = typeof payload.email === "string" ? payload.email : "";
+  if (!uid) throw new HttpError(401, "Your session has expired. Please log in again.");
+  if (!email) throw new HttpError(400, "Your account has no email address.");
+  return { uid, email };
 }
 
 /** Finds the Stripe customer for this Firebase user (by email + uid metadata). */
