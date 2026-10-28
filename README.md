@@ -2,7 +2,7 @@
 
 A clone of [Summarist](https://summarist.vercel.app/) built for the Frontend Simplified Virtual Internship v2.
 
-**Stack:** Next.js (App Router) + TypeScript · Firebase Authentication + Firestore · Stripe via the Firebase "Run Payments with Stripe" extension · Redux Toolkit · react-icons · deployable to Vercel.
+**Stack:** Next.js (App Router) + TypeScript · Firebase Authentication + Firestore · Stripe Checkout via Next.js API routes · Redux Toolkit · react-icons · deployable to Vercel.
 
 ## Pages
 
@@ -56,33 +56,31 @@ Requires Node.js 20.9 or newer.
 
 The "Login as a Guest" button signs in with `NEXT_PUBLIC_GUEST_EMAIL` / `NEXT_PUBLIC_GUEST_PASSWORD`, which default to these values.
 
-## 5. Stripe: install the extension and create the plans
+## 5. Stripe: create the plans
 
-The Stripe extension needs the Firebase **Blaze** (pay-as-you-go) plan, because it runs Cloud Functions. Upgrade under **Usage and billing**.
+Checkout runs through this app's own API routes on Vercel, which call Stripe directly. There is **no Firebase extension**, so the Firebase project stays on the free **Spark** plan and nothing here costs money (Vercel Hobby and Stripe test mode are free).
 
 ### 5a. Create the two products in Stripe (use Test mode)
 
-In the [Stripe dashboard](https://dashboard.stripe.com/test/products) → **Product catalog → Add product**:
+In the [Stripe dashboard](https://dashboard.stripe.com/test/products), with **Test mode** on, go to **Product catalog → Add product**:
 
 | Product | Price | Billing | Trial |
 | --- | --- | --- | --- |
-| **Premium Plus** | e.g. $99.99 | Recurring, **Yearly** | 7 days (the app also sends `trial_period_days: 7` when checking out) |
+| **Premium Plus** | e.g. $99.99 | Recurring, **Yearly** | 7 days (added by the app at checkout) |
 | **Premium** | e.g. $9.99 | Recurring, **Monthly** | none |
 
-After saving each one, open the price and copy its **Price ID** (`price_...`). These go into `NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_PLUS_YEARLY` and `NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY`.
+Open each price and copy its **Price ID** (`price_...`) into `NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_PLUS_YEARLY` and `NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY`.
 
-### 5b. Install "Run Payments with Stripe"
+### 5b. Add the Stripe secret key
 
-1. Install from <https://extensions.dev/extensions/invertase/firestore-stripe-payments> into your Firebase project.
-2. During configuration keep the defaults: products collection `products`, customer collection `customers`, sync new users to Stripe: *Do not sync* (customers are created on first checkout).
-3. Enter your **Stripe secret key** (or a restricted key) when asked. It is stored in Google Secret Manager, never in this repo.
-4. After install, open the extension's **How this extension works** tab. It gives you a **webhook URL**. In Stripe → **Developers → Webhooks → Add endpoint**, paste it and select these events: `product.created`, `product.updated`, `product.deleted`, `price.created`, `price.updated`, `price.deleted`, `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `tax_rate.created`, `tax_rate.updated`, `invoice.paid`, `invoice.payment_succeeded`, `invoice.payment_failed`, `invoice.upcoming`, `invoice.marked_uncollectible`, `invoice.payment_action_required`, `payment_intent.processing`, `payment_intent.succeeded`, `payment_intent.canceled`, `payment_intent.payment_failed`.
-5. Copy the webhook's **signing secret** (`whsec_...`) and reconfigure the extension with it.
-6. Edit one of the products in Stripe (any small change) so the extension syncs both products into Firestore's `products` collection.
+**Developers → API keys → Secret key → Reveal test key**, then copy the `sk_test_...` key into `STRIPE_SECRET_KEY`. It has no `NEXT_PUBLIC_` prefix, so it stays on the server and never reaches the browser. Never commit it or share it.
 
 ### How checkout works in the app
 
-Clicking the plan button writes a document to `customers/{uid}/checkout_sessions` with the chosen price ID. The extension creates a Stripe Checkout Session and writes back its `url`, and the app redirects there. After payment Stripe returns to `/for-you`. The app listens to `customers/{uid}/subscriptions` (status `active` or `trialing`) to decide the plan: the yearly price ID is **Premium Plus**, the monthly one is **Premium**, no active subscription is **Basic**.
+- `POST /api/checkout` verifies the user's Firebase ID token, finds or creates their Stripe customer (matched by email, tagged with the Firebase UID), and creates a Stripe Checkout Session. Yearly gets `trial_period_days: 7`. The browser is redirected to Stripe, then back to `/for-you`.
+- `GET /api/subscription` verifies the user and reads their Stripe subscriptions. `active` or `trialing` on the yearly price is **Premium Plus**, on the monthly price **Premium**, otherwise **Basic**. The app asks again whenever the tab regains focus.
+
+No webhook is needed, because the plan is read from Stripe each time.
 
 Test card: `4242 4242 4242 4242`, any future date, any CVC.
 
@@ -100,10 +98,11 @@ All are listed in [`.env.example`](./.env.example). Copy it to `.env.local` (git
 | `NEXT_PUBLIC_FIREBASE_APP_ID` | `appId` |
 | `NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_PLUS_YEARLY` | Stripe price ID of the yearly Premium Plus price |
 | `NEXT_PUBLIC_STRIPE_PRICE_PREMIUM_MONTHLY` | Stripe price ID of the monthly Premium price |
+| `STRIPE_SECRET_KEY` | Stripe secret key (`sk_test_...`), server only |
 | `NEXT_PUBLIC_GUEST_EMAIL` | Guest account email (default `guest@gmail.com`) |
 | `NEXT_PUBLIC_GUEST_PASSWORD` | Guest account password (default `guest123`) |
 
-The Stripe **secret key** is never used by this app. It lives only inside the Firebase extension.
+`STRIPE_SECRET_KEY` is read only by the API routes on the server. Add it in Vercel, never in client code.
 
 ## 7. Deploy to Vercel
 
@@ -122,6 +121,7 @@ public/                 logo.png, landing.png, google.png, login.png, pricing-to
 src/app/                routes (the (app) group holds pages with sidebar + search bar)
 src/components/         home page sections, auth modal, sidebar, search, player, skeletons
 src/hooks/              audio duration, Read/Listen gating, home login
+src/app/api/            checkout + subscription routes (Stripe, server side)
 src/lib/                API client, Firebase init, auth helpers, Stripe, library (Firestore)
 src/redux/              store + slices (auth modal, user/subscription, sidebar/font size)
 src/types/book.ts       Book type

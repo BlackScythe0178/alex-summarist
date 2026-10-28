@@ -5,30 +5,5 @@ service cloud.firestore {
     match /users/{uid}/{list}/{bookId} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
-
-    // Collections managed by the "Run Payments with Stripe" extension
-    match /customers/{uid} {
-      allow read: if request.auth.uid == uid;
-
-      match /checkout_sessions/{id} {
-        allow read, write: if request.auth.uid == uid;
-      }
-      match /subscriptions/{id} {
-        allow read: if request.auth.uid == uid;
-      }
-      match /payments/{id} {
-        allow read: if request.auth.uid == uid;
-      }
-    }
-
-    match /products/{id} {
-      allow read: if true;
-      match /prices/{id} {
-        allow read: if true;
-      }
-      match /tax_rates/{id} {
-        allow read: if true;
-      }
-    }
   }
 }
