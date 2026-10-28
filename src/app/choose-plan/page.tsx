@@ -101,9 +101,7 @@ export default function ChoosePlanPage() {
     setLoading(true);
     try {
       const url = await createCheckoutSession(
-        user.uid,
-        billing === "yearly" ? PRICE_PREMIUM_PLUS_YEARLY : PRICE_PREMIUM_MONTHLY,
-        billing === "yearly"
+        billing === "yearly" ? PRICE_PREMIUM_PLUS_YEARLY : PRICE_PREMIUM_MONTHLY
       );
       window.location.assign(url);
     } catch (e) {
